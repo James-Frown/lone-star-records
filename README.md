@@ -4,7 +4,7 @@
 One Star Records Customer Relationship Management System
 
 ## Purpose
-This project builds a lightweight web application to manage artists, songs, and appearances for a fictional record label, "One Star Records." It serves as a hands-on learning exercise to develop Python and Django skills, specifically targeting transferable expertise for a tenant management system role at Good People Data Company.
+This project builds a lightweight web application to manage artists, songs, and appearances for a fictional record label, "One Star Records." It serves as a hands-on learning exercise to develop Python and Django skills, specifically targeting transferable expertise for a tenant management system.
 
 ## Technologies
 - **Backend**: Python, Django
@@ -146,7 +146,7 @@ Create a functional CRM to add, view, update, and delete artists, songs, and app
 
 ---
 
-## Transferable Skills for Good People Data Company
+## Transferable Skills
 - **Database Modeling**: Managing `artist_fee`, `is_active`, and dates mirrors tenant financials and lease status.
 - **REST APIs**: CRUD and filtering skills apply to tenant data management.
 - **Authentication**: Securing endpoints aligns with tenant system security.
@@ -160,10 +160,3 @@ Create a functional CRM to add, view, update, and delete artists, songs, and app
 - **React**: Uses hooks and Axios for frontend development.
 - **Postman**: For testing APIs during development.
 - **SQLite**: Default lightweight database (no setup required).
-
----
-
-## Next Steps
-- Test the app with sample data (e.g., 3 artists, 5 songs, 2 appearances).
-- Prepare to discuss one challenge (e.g., CORS) and its solution in your interview.
-- Optionally deploy locally with `npm run build` and Django static file serving.
