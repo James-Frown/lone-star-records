@@ -1,8 +1,6 @@
 from django.db import models
 from datetime import date
 
-# Create your models here.
-# Define a basic class (object model)
 class Artist(models.Model):
     name = models.CharField(max_length=100)
     bio = models.TextField()
@@ -11,11 +9,9 @@ class Artist(models.Model):
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
     
-    # Method to get is-active info
     def is_currently_active(self):
         return self.is_active and (self.end_date is None or self.end_date > date.today())
     
-    # Method to get name info
     def __str__(self):
         return self.name
 

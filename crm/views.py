@@ -1,4 +1,3 @@
-# Create your views here.
 from rest_framework import generics
 from .models import Artist, Song, Appearance
 from .serializers import ArtistSerializer, SongSerializer, AppearanceSerializer
