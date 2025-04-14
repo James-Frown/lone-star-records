@@ -3,19 +3,21 @@ import axios from "axios";
 
 function App() {
   const [artists, setArtists] = useState([]);
-  const [filteredArtists, setFilteredArtists] = useState([]);
+  const [songs, setSongs] = useState([]);
+  const [appearances, setAppearances] = useState([]);
   const [error, setError] = useState(null);
+  const [selectedArtist, setSelectedArtist] = useState(null);
 
   useEffect(() => {
+    // Automatically load artists when the component mounts
     axios
-      .get(process.env.REACT_APP_API_URL, {
+      .get("http://localhost:8000/api/artists/", {
         headers: {
           Authorization: process.env.REACT_APP_AUTH_TOKEN,
         },
       })
       .then((response) => {
         setArtists(response.data);
-        setFilteredArtists(response.data);
         setError(null);
       })
       .catch((error) => {
@@ -23,84 +25,176 @@ function App() {
       });
   }, []);
 
-  const filterActiveArtists = () => {
-    const now = new Date();
-    setFilteredArtists(
-      artists.filter(
-        (artist) =>
-          new Date(artist.start_date) <= now && new Date(artist.end_date) >= now
-      )
-    );
+  const getSongs = () => {
+    axios
+      .get("http://localhost:8000/api/songs/", {
+        headers: {
+          Authorization: process.env.REACT_APP_AUTH_TOKEN,
+        },
+      })
+      .then((response) => {
+        setSongs(response.data);
+        setError(null);
+      })
+      .catch((error) => {
+        setError(error.message);
+      });
   };
 
-  const resetFilter = () => {
-    setFilteredArtists(artists);
+  const getAppearances = () => {
+    axios
+      .get("http://localhost:8000/api/appearances/", {
+        headers: {
+          Authorization: process.env.REACT_APP_AUTH_TOKEN,
+        },
+      })
+      .then((response) => {
+        setAppearances(response.data);
+        setError(null);
+      })
+      .catch((error) => {
+        setError(error.message);
+      });
   };
 
-  const handleCreateArtist = () => {
-    // Logic to create a new artist
-    alert("Create Artist button clicked!");
-  };
+  const handleArtistChange = (event) => {
+    const artistId = event.target.value;
+    const artist = artists.find((artist) => artist.id === parseInt(artistId));
+    setSelectedArtist(artist);
 
-  const handleCreateAppearance = () => {
-    // Logic to create a new appearance
-    alert("Create Appearance button clicked!");
-  };
-
-  const handleAddSong = () => {
-    // Logic to add a new song
-    alert("Add Song button clicked!");
-  };
-
-  const handleUpdateArtist = (artistId) => {
-    // Logic to update artist details
-    alert(`Update Artist button clicked for artist ID: ${artistId}`);
+    // Fetch songs and appearances when an artist is selected
+    getSongs();
+    getAppearances();
   };
 
   return (
     <div style={{ textAlign: "center", padding: "20px" }}>
       <h1>Welcome to Lone Star Records</h1>
-      <p>Your one-stop destination for amazing artists and performances!</p>
-      {error && <p style={{ color: "red" }}>Error: {error}</p>}
 
-      <div style={{ marginBottom: "20px" }}>
-        <button onClick={filterActiveArtists}>Show Active Artists</button>
-        <button onClick={resetFilter}>Show All Artists</button>
-        <button onClick={handleCreateArtist}>Create New Artist</button>
-        <button onClick={handleCreateAppearance}>Create New Appearance</button>
-        <button onClick={handleAddSong}>Add New Song</button>
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "nowrap",
-          overflowX: "auto",
-          padding: "10px",
-          gap: "10px",
-        }}
-      >
-        {filteredArtists.map((artist) => (
-          <div
-            key={artist.id}
-            style={{
-              flex: "0 0 auto",
-              border: "1px solid #ddd",
-              padding: "10px",
-              borderRadius: "5px",
-              textAlign: "left",
-              width: "300px",
-              backgroundColor: "#f9f9f9",
-            }}
+      {artists.length > 0 && (
+        <div style={{ marginTop: "20px" }}>
+          <label htmlFor="artists-dropdown">Select an Artist:</label>
+          <select
+            id="artists-dropdown"
+            style={{ marginLeft: "10px" }}
+            onChange={handleArtistChange}
           >
-            <h3>{artist.name}</h3>
-            <p>{artist.bio}</p>
-            <p>Fee: ${artist.artist_fee}</p>
-            <p>Active From: {artist.start_date}</p>
-            <p>Active Until: {artist.end_date}</p>
-          </div>
-        ))}
-      </div>
+            <option value="" disabled selected>
+              Select an artist
+            </option>
+            {artists.map((artist) => (
+              <option key={artist.id} value={artist.id}>
+                {artist.name}
+              </option>
+            ))}
+          </select>
+          {selectedArtist && (
+            <div
+              style={{
+                marginTop: "20px",
+                border: "1px solid #ccc",
+                padding: "10px",
+                borderRadius: "5px",
+              }}
+            >
+              <h3>Artist Details</h3>
+              <p>
+                <strong>Name:</strong> {selectedArtist.name}
+              </p>
+              <p>
+                <strong>Bio:</strong> {selectedArtist.bio}
+              </p>
+              <p>
+                <strong>Active:</strong>{" "}
+                <input
+                  type="checkbox"
+                  checked={!selectedArtist.end_date}
+                  readOnly
+                />
+              </p>
+              {selectedArtist.start_date && (
+                <p>
+                  <strong>Start Date:</strong> {selectedArtist.start_date}
+                </p>
+              )}
+              {selectedArtist.end_date && (
+                <p>
+                  <strong>End Date:</strong> {selectedArtist.end_date}
+                </p>
+              )}
+
+              <div style={{ marginTop: "20px" }}>
+                <h4>Songs</h4>
+                {songs.filter((song) => song.artist_id === selectedArtist.id)
+                  .length > 0 ? (
+                  <div>
+                    {songs
+                      .filter((song) => song.artist_id === selectedArtist.id)
+                      .map((song) => (
+                        <div
+                          key={song.id}
+                          style={{
+                            marginBottom: "10px",
+                            padding: "10px",
+                            border: "1px solid #ddd",
+                            borderRadius: "5px",
+                          }}
+                        >
+                          <p>
+                            <strong>Title:</strong> {song.title}
+                          </p>
+                          <p>
+                            <strong>Duration:</strong> {song.duration}
+                          </p>
+                          <p>
+                            <strong>Release Date:</strong> {song.release_date}
+                          </p>
+                        </div>
+                      ))}
+                  </div>
+                ) : (
+                  <p>No songs available for this artist.</p>
+                )}
+              </div>
+
+              <div style={{ marginTop: "20px" }}>
+                <h4>Appearances</h4>
+                {appearances.filter(
+                  (appearance) => appearance.artist_id === selectedArtist.id
+                ).length > 0 ? (
+                  <div>
+                    {appearances
+                      .filter(
+                        (appearance) =>
+                          appearance.artist_id === selectedArtist.id
+                      )
+                      .map((appearance) => (
+                        <div
+                          key={appearance.id}
+                          style={{
+                            marginBottom: "10px",
+                            padding: "10px",
+                            border: "1px solid #ddd",
+                            borderRadius: "5px",
+                          }}
+                        >
+                          <p>
+                            <strong>Date:</strong> {appearance.date}
+                          </p>
+                          <p>
+                            <strong>Location:</strong> {appearance.location}
+                          </p>
+                        </div>
+                      ))}
+                  </div>
+                ) : (
+                  <p>No appearances available for this artist.</p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
