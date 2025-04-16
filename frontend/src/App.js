@@ -6,11 +6,52 @@ const AUTH_HEADERS = {
   headers: { Authorization: process.env.REACT_APP_AUTH_TOKEN },
 };
 
-const ArtistDetails = ({ artist, songs, appearances, onEdit, onRemove }) => {
+const ArtistDetails = ({ artist, songs, appearances, onEdit, onRemove, setError, setSongs, setAppearances }) => {
   const artistSongs = songs.filter((song) => song.artist_id === artist.id);
   const artistAppearances = appearances.filter(
     (appearance) => appearance.artist_id === artist.id
   );
+
+  const handleEditSong = (songId) => {
+    const updatedTitle = prompt("Enter new title for the song:");
+    if (!updatedTitle) return;
+
+    const updatedPlays = parseInt(prompt("Enter updated number of plays:"), 10);
+    if (isNaN(updatedPlays)) {
+      alert("Invalid number of plays entered. Please try again.");
+      return;
+    }
+
+    const updatedReleaseDate = prompt("Enter updated release date (YYYY-MM-DD):");
+
+    const updatedSong = {
+      title: updatedTitle,
+      plays: updatedPlays,
+      release_date: updatedReleaseDate,
+    };
+
+    axios
+      .patch(`${API_BASE_URL}/songs/${songId}/`, updatedSong, AUTH_HEADERS)
+      .then((response) => {
+        setSongs((prev) =>
+          prev.map((song) => (song.id === songId ? response.data : song))
+        );
+        alert("Song updated successfully!");
+      })
+      .catch((err) => setError(err.message));
+  };
+
+  const handleRemoveSong = (songId) => {
+    if (!window.confirm("Are you sure you want to delete this song?")) return;
+
+    axios
+      .delete(`${API_BASE_URL}/songs/${songId}/`, AUTH_HEADERS)
+      .then(() => {
+        setSongs((prev) => prev.filter((song) => song.id !== songId));
+        alert("Song removed successfully!");
+      })
+      .catch((err) => setError(err.message));
+  };
 
   return (
     <div style={{ marginTop: "20px", padding: "10px", borderRadius: "5px" }}>
@@ -68,6 +109,20 @@ const ArtistDetails = ({ artist, songs, appearances, onEdit, onRemove }) => {
             <p>
               <strong>Release Date:</strong> {song.release_date}
             </p>
+            <div style={{ marginTop: "10px" }}>
+              <button
+                onClick={() => handleEditSong(song.id)}
+                style={buttonStyle("#2196F3")}
+              >
+                Edit Song
+              </button>
+              <button
+                onClick={() => handleRemoveSong(song.id)}
+                style={buttonStyle("#f44336")}
+              >
+                Remove Song
+              </button>
+            </div>
           </>
         )}
       />
@@ -83,6 +138,72 @@ const ArtistDetails = ({ artist, songs, appearances, onEdit, onRemove }) => {
             <p>
               <strong>Location:</strong> {appearance.location}
             </p>
+            <div style={{ marginTop: "10px" }}>
+              <button
+                onClick={() => {
+                  const updatedDate = prompt(
+                    "Enter new date for the appearance (YYYY-MM-DD):",
+                    appearance.date
+                  );
+                  if (!updatedDate) return;
+
+                  const updatedLocation = prompt(
+                    "Enter new location for the appearance:",
+                    appearance.location
+                  );
+                  if (!updatedLocation) return;
+
+                  const updatedAppearance = {
+                    date: updatedDate,
+                    location: updatedLocation,
+                  };
+
+                  axios
+                    .patch(
+                      `${API_BASE_URL}/appearances/${appearance.id}/`,
+                      updatedAppearance,
+                      AUTH_HEADERS
+                    )
+                    .then((response) => {
+                      setAppearances((prev) =>
+                        prev.map((app) =>
+                          app.id === appearance.id ? response.data : app
+                        )
+                      );
+                      alert("Appearance updated successfully!");
+                    })
+                    .catch((err) => setError(err.message));
+                }}
+                style={buttonStyle("#2196F3")}
+              >
+                Edit Appearance
+              </button>
+              <button
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      "Are you sure you want to delete this appearance?"
+                    )
+                  ) {
+                    axios
+                      .delete(
+                        `${API_BASE_URL}/appearances/${appearance.id}/`,
+                        AUTH_HEADERS
+                      )
+                      .then(() => {
+                        setAppearances((prev) =>
+                          prev.filter((app) => app.id !== appearance.id)
+                        );
+                        alert("Appearance removed successfully!");
+                      })
+                      .catch((err) => setError(err.message));
+                  }
+                }}
+                style={buttonStyle("#f44336")}
+              >
+                Remove Appearance
+              </button>
+            </div>
           </>
         )}
       />
@@ -307,7 +428,7 @@ function App() {
             onChange={handleArtistChange}
             style={{ padding: "10px", fontSize: "16px" }}
           >
-            <option value="" disabled selected>
+            <option defaultValue="Select an artist">
               Select an artist
             </option>
             {artists.map((artist) => (
@@ -324,6 +445,9 @@ function App() {
               appearances={appearances}
               onEdit={handleEditArtist}
               onRemove={handleRemoveArtist}
+              setError={setError}
+              setSongs={setSongs}
+              setAppearances={setAppearances}
             />
           )}
         </div>
