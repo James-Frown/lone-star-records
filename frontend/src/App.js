@@ -115,13 +115,13 @@ const ArtistDetails = ({artist, songs, appearances, onEdit, onRemove, setError, 
                         <div style={{marginTop: "10px"}}>
                             <button
                                 onClick={() => handleEditSong(song.id)}
-                                style={buttonStyle("#2196F3")}
+                                style={buttonStyle("blue")}
                             >
                                 Edit Song
                             </button>
                             <button
                                 onClick={() => handleRemoveSong(song.id)}
-                                style={buttonStyle("#f44336")}
+                                style={buttonStyle("red")}
                             >
                                 Remove Song
                             </button>
@@ -177,7 +177,7 @@ const ArtistDetails = ({artist, songs, appearances, onEdit, onRemove, setError, 
                                         })
                                         .catch((err) => setError(err.message));
                                 }}
-                                style={buttonStyle("#2196F3")}
+                                style={buttonStyle("blue")}
                             >
                                 Edit Appearance
                             </button>
@@ -202,7 +202,7 @@ const ArtistDetails = ({artist, songs, appearances, onEdit, onRemove, setError, 
                                             .catch((err) => setError(err.message));
                                     }
                                 }}
-                                style={buttonStyle("#f44336")}
+                                style={buttonStyle("red")}
                             >
                                 Remove Appearance
                             </button>
