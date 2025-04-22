@@ -60,6 +60,9 @@ const ArtistDetails = ({artist, songs, appearances, onEdit, onRemove, setError, 
                 <strong>Name:</strong> {artist.name}
             </p>
             <p>
+                <strong>Age:</strong> {artist.age}
+            </p>
+            <p>
                 <strong>Bio:</strong> {artist.bio}
             </p>
             <p>
@@ -268,6 +271,9 @@ function App() {
         if (!updatedName) return;
         const updatedBio = prompt("Enter new bio for the artist:");
         if (!updatedBio) return;
+        const updatedAge_Str = prompt("Enter new Age for the artist:");
+        const updatedAge = parseFloat(updatedAge_Str);
+        if (!updatedAge) return;
         const updatedFee_Str = prompt("Enter new fee for the artist:");
         const updatedFee = parseFloat(updatedFee_Str);
         if (!updatedFee) return;
@@ -280,6 +286,7 @@ function App() {
                 {
                     name: updatedName,
                     bio: updatedBio,
+                    age: updatedAge,
                     artist_fee: updatedFee,
                     is_active: updatedActive,
                 },

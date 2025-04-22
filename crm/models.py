@@ -3,6 +3,7 @@ from datetime import date
 
 class Artist(models.Model):
     name = models.CharField(max_length=100)
+    age = models.IntegerField()
     bio = models.TextField()
     artist_fee = models.DecimalField(max_digits=10, decimal_places=2)
     is_active = models.BooleanField(default=True)
