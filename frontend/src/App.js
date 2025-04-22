@@ -265,11 +265,14 @@ function App() {
 
     const handleEditArtist = (artistId) => {
         const updatedName = prompt("Enter new name for the artist:");
+        if (!updatedName) return;
         const updatedBio = prompt("Enter new bio for the artist:");
+        if (!updatedBio) return;
         const updatedFee_Str = prompt("Enter new fee for the artist:");
-        const updatedActive = window.confirm("Enter Active Status for the artist:");
         const updatedFee = parseFloat(updatedFee_Str);
-        if (!updatedName || !updatedBio || !updatedFee) return;
+        if (!updatedFee) return;
+        const updatedActive = window.confirm("Enter Active Status for the artist:");
+        if (!updatedActive) return;
 
         axios
             .patch(
